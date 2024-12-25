@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Est-ce que tu m'aimes ?</title>
+  <style>
+    /* Reset de base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      overflow: hidden; /* Pour éviter les scrollbars */
+      background: linear-gradient(135deg, #ffa7c4, #ffc7f0);
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* Container principal pour la question */
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      transition: all 0.5s ease;
+    }
+
+    #question {
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .btns {
+      display: flex;
+      gap: 1rem;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    #oui {
+      background-color: #46ff9c;
+    }
+
+    #non {
+      background-color: #ff5e5e;
+    }
+
+    /* Page finale (cachée par défaut) */
+    #final {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(255, 255, 255, 0.8); /* Fond blanc semi-transparent */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: -1; /* caché derrière, mis à jour dans le JS */
+      opacity: 0;  /* invisible */
+      transition: opacity 0.8s ease, z-index 0.8s ease;
+    }
+
+    #final h1 {
+      font-size: 4rem;
+      color: #FF6392;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      margin-bottom: 2rem;
+    }
+
+    #final img {
+      width: 300px;
+      height: auto;
+      margin-bottom: 2rem;
+      border: 3px solid #FF6392;
+      border-radius: 15px;
+    }
+
+    /* Pluie de coeurs */
+    .heart {
+      position: fixed;
+      color: #ff6392;
+      font-size: 2rem;
+      opacity: 0.8;
+      animation: fall 4s linear infinite;
+      top: -5%;
+      z-index: 20; /* Assure que les cœurs sont au-dessus */
+    }
+
+    /* Animation pour faire tomber les coeurs */
+    @keyframes fall {
+      0% {
+        transform: translateY(-100vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Conteneur principal -->
+  <div id="container">
+    <h1 id="question">Est-ce que tu m'aimes ?</h1>
+    <div class="btns">
+      <button id="oui">OUI</button>
+      <button id="non">NON</button>
+    </div>
+  </div>
+
+  <!-- Page finale avec le message LETSGOOOO -->
+  <div id="final">
+    <h1>LETSGOOOO</h1>
+    <!-- Un gif de chat mignon -->
+    <img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" alt="Chat content" />
+  </div>
+
+  <!-- Script JS pour la logique (inclus dans le même fichier) -->
+  <script>
+    const question = document.getElementById('question');
+    const btnOui = document.getElementById('oui');
+    const btnNon = document.getElementById('non');
+    const container = document.getElementById('container');
+    const final = document.getElementById('final');
+
+    // Variable qui indique si on est passé à "T'es sûr de ton choix ?"
+    let surDeTonChoix = false;
+
+    // Gestion du clic sur OUI
+    btnOui.addEventListener('click', () => {
+      // Si on n'a pas encore changé la question (surDeTonChoix = false),
+      // alors on va directement sur la page finale
+      if (!surDeTonChoix) {
+        showFinalPage();
+      }
+      // S'il est déjà à "T'es sûr de ton choix ?", le clic n’est pas possible
+      // car on va faire bouger le bouton en mouseover. 
+      // (Mais si tu veux qu’un clic à ce stade fasse quelque chose, tu peux l’ajouter ici.)
+    });
+
+    // Gestion du survol sur OUI
+    btnOui.addEventListener('mouseover', () => {
+      // Si on est sur "T'es sûr de ton choix ?", on déplace le bouton OUI
+      if(surDeTonChoix) {
+        moveButtonRandomly(btnOui);
+      }
+    });
+
+    // Gestion du clic sur NON
+    btnNon.addEventListener('click', () => {
+      // Si on est déjà sur "T'es sûr de ton choix ?", alors on affiche la page finale
+      if(surDeTonChoix) {
+        showFinalPage();
+      } else {
+        // Sinon, on change le texte et on passe la variable surDeTonChoix à true
+        question.textContent = "T'es sûr de ton choix ?";
+        surDeTonChoix = true;
+      }
+    });
+
+    // Pour bouger le bouton "OUI" aléatoirement
+    function moveButtonRandomly(button) {
+      const containerRect = container.getBoundingClientRect();
+      const btnWidth = button.offsetWidth;
+      const btnHeight = button.offsetHeight;
+
+      // On calcule une position aléatoire à l'intérieur du container
+      const randLeft = Math.random() * (containerRect.width - btnWidth);
+      const randTop = Math.random() * (containerRect.height - btnHeight);
+
+      button.style.position = 'absolute';
+      button.style.left = randLeft + 'px';
+      button.style.top = randTop + 'px';
+    }
+
+    // Affiche la page finale
+    function showFinalPage() {
+      // On masque le container et on affiche #final
+      container.style.display = 'none';
+      final.style.zIndex = 10;
+      final.style.opacity = 1;
+
+      createHearts(); // On lance la pluie de coeurs
+    }
+
+    // Fonction pour créer et faire tomber des cœurs
+    function createHearts() {
+      for (let i = 0; i < 30; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.textContent = '♥';
+
+        // Position horizontale aléatoire
+        heart.style.left = Math.random() * 100 + 'vw';
+
+        // Durée d'animation aléatoire
+        heart.style.animationDuration = (2 + Math.random() * 3) + 's';
+
+        // Taille aléatoire
+        const size = 1 + Math.random() * 1.5;
+        heart.style.fontSize = size + 'rem';
+
+        document.body.appendChild(heart);
+
+        // Retire le cœur du DOM après un certain temps pour éviter l'accumulation
+        setTimeout(() => {
+          heart.remove();
+        }, 5000);
+      }
+
+      // Relancer la pluie de cœurs toutes les 2 secondes (optionnel)
+      setTimeout(createHearts, 2000);
+    }
+  </script>
+
+</body>
+</html>
