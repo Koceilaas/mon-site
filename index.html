@@ -52,6 +52,7 @@
       border: none;
       border-radius: 8px;
       transition: background 0.3s, transform 0.3s;
+      position: relative; /* Assure que les boutons restent dans le flux normal */
     }
 
     button:hover {
@@ -150,22 +151,28 @@
     let surDeTonChoix = false;
 
     // Gestion du clic sur OUI
-    btnOui.addEventListener('click', () => {
-      // Si on n'a pas encore changé la question (surDeTonChoix = false),
-      // alors on va directement sur la page finale
+    btnOui.addEventListener('click', (e) => {
       if (!surDeTonChoix) {
         showFinalPage();
+      } else {
+        // Déplacer le bouton au lieu de permettre le clic
+        moveButtonRandomly(btnOui);
+        e.preventDefault();
       }
-      // S'il est déjà à "T'es sûr de ton choix ?", le clic n’est pas possible
-      // car on va faire bouger le bouton en mouseover. 
-      // (Mais si tu veux qu’un clic à ce stade fasse quelque chose, tu peux l’ajouter ici.)
     });
 
-    // Gestion du survol sur OUI
+    // Gestion du survol sur OUI (pour les appareils avec souris)
     btnOui.addEventListener('mouseover', () => {
-      // Si on est sur "T'es sûr de ton choix ?", on déplace le bouton OUI
       if(surDeTonChoix) {
         moveButtonRandomly(btnOui);
+      }
+    });
+
+    // Gestion du touchstart sur OUI (pour les appareils tactiles)
+    btnOui.addEventListener('touchstart', (e) => {
+      if(surDeTonChoix) {
+        moveButtonRandomly(btnOui);
+        e.preventDefault();
       }
     });
 
@@ -187,10 +194,11 @@
       const btnWidth = button.offsetWidth;
       const btnHeight = button.offsetHeight;
 
-      // On calcule une position aléatoire à l'intérieur du container
+      // Calculer une position aléatoire à l'intérieur du container
       const randLeft = Math.random() * (containerRect.width - btnWidth);
       const randTop = Math.random() * (containerRect.height - btnHeight);
 
+      // Appliquer les nouvelles positions
       button.style.position = 'absolute';
       button.style.left = randLeft + 'px';
       button.style.top = randTop + 'px';
